@@ -1,1 +1,1 @@
-find . \( -path "./.git" -o -path ./documents \) -prune -o -type f \( -not -name "*.md" -a -not -name "*.css" -a -not -name "*.ico" -a -not -name ".gitignore" -a -not -name "codebase.*" \) -print -exec cat -b {} \; | grep '\S' >& codebase.txt
+find . \( -path "./.git" -o -path ./documents \) -prune -o -type f \( -not -name ".DS_Store" -a -not -name "*.md" -a -not -name "*.css" -a -not -name "*.ico" -a -not -name ".gitignore" -a -not -name "codebase.*" \) -print -exec cat -b {} \; | grep '\S' >& codebase.txt
