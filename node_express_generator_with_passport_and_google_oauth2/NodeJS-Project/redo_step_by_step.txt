@@ -1,5 +1,7 @@
 < A. GOOGLE ACCOUNT "MUST-HAVE">
 (1) Google account
+    - https://console.cloud.google.com
+    - https://console.cloud.google.com/apis/credentials?project=lcys2025
 (2) Client ID - setup at google cloud, set up a cloud client
 (3) Client Secret (password phrase) - setup at google cloud, ONLY SHOW ONE TIME
 
