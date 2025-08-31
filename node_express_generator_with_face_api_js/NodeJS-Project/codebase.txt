@@ -1,0 +1,406 @@
+./bin/www
+     1	#!/usr/bin/env node
+     2	import app from "../app.js";
+     3	import debugLib from "debug";
+     4	import http from "http";
+     5	import dotenv from "dotenv";
+     6	dotenv.config();
+     7	const debug = debugLib("face-recognition-app:server");
+     8	const port = normalizePort(process.env.PORT || "3030");
+     9	app.set("port", port);
+    10	const server = http.createServer(app);
+    11	server.listen(port);
+    12	server.on("error", onError);
+    13	server.on("listening", onListening);
+    14	function normalizePort(val) {
+    15	  const port = parseInt(val, 10);
+    16	  if (isNaN(port)) return val;
+    17	  if (port >= 0) return port;
+    18	  return false;
+    19	}
+    20	function onError(error) {
+    21	  if (error.syscall !== "listen") throw error;
+    22	  const bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+    23	  switch (error.code) {
+    24	    case "EACCES":
+    25	      console.error(bind + " requires elevated privileges");
+    26	      process.exit(1);
+    27	    case "EADDRINUSE":
+    28	      console.error(bind + " is already in use");
+    29	      process.exit(1);
+    30	    default:
+    31	      throw error;
+    32	  }
+    33	}
+    34	function onListening() {
+    35	  const addr = server.address();
+    36	  const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+    37	  debug("Listening on " + bind);
+    38	  console.log(`✅ Server running at http://localhost:${port}`);
+    39	}
+./public/face/js/face.js
+     1	const video = document.getElementById("video");
+     2	let faceMatcher = null;
+     3	let modelsLoaded = false;
+     4	async function loadModels() {
+     5	    try {
+     6	        console.log('Loading face detection models...');
+     7	        // Load ALL required models first
+     8	        await Promise.all([
+     9	            faceapi.nets.tinyFaceDetector.loadFromUri("/face/models"),
+    10	            faceapi.nets.faceLandmark68Net.loadFromUri("/face/models"),
+    11	            faceapi.nets.faceRecognitionNet.loadFromUri("/face/models"),
+    12	            faceapi.nets.ssdMobilenetv1.loadFromUri("/face/models") // Add this if needed
+    13	        ]);
+    14	        console.log('All models loaded successfully');
+    15	        modelsLoaded = true;
+    16	        // Now load labeled images for recognition
+    17	        await loadLabeledImages();
+    18	    } catch (error) {
+    19	        console.error('Error loading models:', error);
+    20	    }
+    21	}
+    22	async function loadLabeledImages() {
+    23	    try {
+    24	        //const labels = ['chan_tai_man', 'john_doe', 'jane_smith'];
+    25	        const labels = ['chan_tai_man'];
+    26	        const labeledFaceDescriptors = await Promise.all(
+    27	            labels.map(async label => {
+    28	                const descriptions = [];
+    29	                // Try multiple image numbers and extensions
+    30	                for (let i = 1; i <= 6; i++) {
+    31	                    try {
+    32	                        const img = await faceapi.fetchImage(`/face/images/${label}/${label}${i}.jpg`);
+    33	                        const detections = await faceapi.detectSingleFace(img)
+    34	                            .withFaceLandmarks()
+    35	                            .withFaceDescriptor();
+    36	                        if (detections) {
+    37	                            descriptions.push(detections.descriptor);
+    38	                            console.log(`✓ Loaded image for ${label}`);
+    39	                        }
+    40	                    } catch (error) {
+    41	                        console.warn(`Could not load image ${i} for ${label}:`, error);
+    42	                    }
+    43	                }
+    44	                return new faceapi.LabeledFaceDescriptors(label, descriptions);
+    45	            })
+    46	        );
+    47	        faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
+    48	        console.log('Face recognition ready');
+    49	    } catch (error) {
+    50	        console.error('Error loading labeled images:', error);
+    51	    }
+    52	}
+    53	async function startVideo() {
+    54	    try {
+    55	        const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+    56	        video.srcObject = stream;
+    57	        // Start loading models as soon as video access is granted
+    58	        loadModels();
+    59	    } catch (err) {
+    60	        console.error("Error accessing webcam:", err);
+    61	    }
+    62	}
+    63	video.addEventListener("play", () => {
+    64	    if (!modelsLoaded) {
+    65	        console.log('Models not loaded yet, waiting...');
+    66	        return;
+    67	    }
+    68	    startFaceDetection();
+    69	});
+    70	function startFaceDetection() {
+    71	    const canvas = document.getElementById("overlay");
+    72	    const displaySize = { width: video.width, height: video.height };
+    73	    faceapi.matchDimensions(canvas, displaySize);
+    74	    setInterval(async () => {
+    75	        if (!modelsLoaded) return; // Don't run if models aren't ready
+    76	        try {
+    77	            const detections = await faceapi.detectAllFaces(
+    78	                video,
+    79	                new faceapi.TinyFaceDetectorOptions()
+    80	            )
+    81	                .withFaceLandmarks()
+    82	                .withFaceDescriptors();
+    83	            const resized = faceapi.resizeResults(detections, displaySize);
+    84	            const ctx = canvas.getContext("2d");
+    85	            ctx.clearRect(0, 0, canvas.width, canvas.height);
+    86	            if (faceMatcher) {
+    87	                resized.forEach(result => {
+    88	                    const bestMatch = faceMatcher.findBestMatch(result.descriptor);
+    89	                    const box = result.detection.box;
+    90	                    const drawBox = new faceapi.draw.DrawBox(box, {
+    91	                        label: bestMatch.toString(),
+    92	                        boxColor: bestMatch.distance < 0.6 ? 'green' : 'red'
+    93	                    });
+    94	                    drawBox.draw(canvas);
+    95	                    //console.log(`Recognized: ${bestMatch.label} with distance: ${bestMatch.distance}`);
+    96	                    // Only trigger login once per recognition session to avoid spamming
+    97	                    if (!window.recognitionTriggered) {
+    98	                        window.recognitionTriggered = true;
+    99	                        handleRecognizedUser(bestMatch.label, bestMatch.distance);
+   100	                        // Reset after 5 seconds to allow re-recognition
+   101	                        setTimeout(() => {
+   102	                            window.recognitionTriggered = false;
+   103	                            //console.log(`Recognized: ${bestMatch.label}`);
+   104	                        }, 5000);
+   105	                    }
+   106	                });
+   107	            } else {
+   108	                faceapi.draw.drawDetections(canvas, resized);
+   109	            }
+   110	        } catch (error) {
+   111	            console.error('Detection error:', error);
+   112	        }
+   113	    }, 100);
+   114	}
+   115	// Add a manual check button for testing
+   116	function addTestButton() {
+   117	    const button = document.createElement('button');
+   118	    button.textContent = 'Check Model Status';
+   119	    button.style.position = 'absolute';
+   120	    button.style.top = '10px';
+   121	    button.style.left = '10px';
+   122	    button.style.zIndex = '1000';
+   123	    button.onclick = () => {
+   124	        console.log('Models loaded:', modelsLoaded);
+   125	        console.log('FaceMatcher ready:', faceMatcher !== null);
+   126	        if (faceMatcher) {
+   127	            console.log('Available labels:', faceMatcher.labeledDescriptors.map(d => d.label));
+   128	        }
+   129	    };
+   130	    document.body.appendChild(button);
+   131	}
+   132	async function handleRecognizedUser(username, confidence) {
+   133	    try {
+   134	        //console.log(`Recognized user: ${username} with confidence: ${confidence}`);
+   135	        const response = await fetch('/face/login', {
+   136	            method: 'POST',
+   137	            headers: {
+   138	                'Content-Type': 'application/json',
+   139	            },
+   140	            body: JSON.stringify({
+   141	                username: `${username}`,
+   142	                confidence: `${confidence}`
+   143	            })
+   144	        });
+   145	        const result = await response.json();
+   146	        if (result.success) {
+   147	            // Redirect to dashboard or show success message
+   148	            window.location.href = '/face/dashboard'; // or wherever you want to redirect
+   149	            alert('Face recognition login passed: ' + result.message);
+   150	        } else {
+   151	            console.log('Login failed:', result.message);
+   152	            // Show error message to user
+   153	            //alert('Face recognition login failed: ' + result.message);
+   154	        }
+   155	    } catch (error) {
+   156	        console.error('Error sending recognition data:', error);
+   157	    }
+   158	}
+   159	// Start everything
+   160	startVideo();
+   161	//addTestButton();
+./package.json
+     1	{
+     2	  "name": "face-recognition-app",
+     3	  "version": "1.0.0",
+     4	  "private": true,
+     5	  "type": "module",
+     6	  "scripts": {
+     7	    "start": "node ./bin/www"
+     8	  },
+     9	  "dependencies": {
+    10	    "debug": "^4.3.4",
+    11	    "dotenv": "^16.4.5",
+    12	    "ejs": "^3.1.9",
+    13	    "express": "^4.19.2",
+    14	    "express-session": "^1.18.2"
+    15	  }
+    16	}
+./.env
+     1	PORT=3030
+./views/dashboard.ejs
+     1	<!DOCTYPE html>
+     2	<html>
+     3	<head>
+     4	    <title>Dashboard</title>
+     5	</head>
+     6	<body>
+     7	    <h2>Welcome, <%= user.fullName %>!</h2>
+     8	    <p>You logged in via: <strong><%= loginMethod %></strong></p>
+     9	    <p>Username: <%= user.username %></p>
+    10	    
+    11	    <a href="/face/logout">Logout</a>
+    12	</body>
+    13	</html>
+./views/login.ejs
+     1	<!DOCTYPE html>
+     2	<html>
+     3	  <head>
+     4	    <title>Login</title>
+     5	  </head>
+     6	  <body>
+     7	    <h2>Login</h2>
+     8	    <% if (typeof error !== "undefined") { %>
+     9	      <p style="color:red"><%= error %></p>
+    10	    <% } %>
+    11	    <!-- Username/Password login -->
+    12	    <form action="/login" method="POST">
+    13	      <label>Username:</label>
+    14	      <input type="text" name="username" required />
+    15	      <br />
+    16	      <label>Password:</label>
+    17	      <input type="password" name="password" required />
+    18	      <br />
+    19	      <button type="submit">Login</button>
+    20	    </form>
+    21	    <hr />
+    22	    <!-- Face recognition login button -->
+    23	    <form action="/face" method="GET">
+    24	      <button type="submit">Login with Face Recognition</button>
+    25	    </form>
+    26	  </body>
+    27	</html>
+./views/face.ejs
+     1	<!DOCTYPE html>
+     2	<html>
+     3	  <head>
+     4	    <title>Face Recognition</title>
+     5	  </head>
+     6	  <body>
+     7	    <h2>Face Recognition with face-api.js</h2>
+     8	    <video id="video" width="720" height="560" autoplay muted></video>
+     9	    <canvas id="overlay" width="720" height="560"></canvas>
+    10	    <!-- Load face-api.js library -->
+    11	    <script defer src="/face/js/face-api.min.js"></script>
+    12	    <!-- Load our custom script -->
+    13	    <script src="/face/js/face.js"></script>
+    14	  </body>
+    15	</html>
+./routes/login.js
+     1	import express from "express";
+     2	const router = express.Router();
+     3	router.get("/", (req, res) => {
+     4	  res.render("login");
+     5	});
+     6	router.post("/", (req, res) => {
+     7	  const { username, password } = req.body;
+     8	  if (username === "admin" && password === "1234") {
+     9	    return res.redirect("/face");
+    10	  }
+    11	  res.render("login", { error: "Invalid credentials" });
+    12	});
+    13	export default router;
+./routes/face.js
+     1	/*
+     2	import express from "express";
+     3	const router = express.Router();
+     4	router.get("/", (req, res) => {
+     5	  res.render("face");
+     6	});
+     7	export default router;
+     8	*/
+     9	import express from "express";
+    10	const router = express.Router();
+    11	// Store recognized users (in production, use a database)
+    12	const recognizedUsers = {
+    13	    'chan_tai_man': { password: '1234', fullName: 'Chan Tai Man' },
+    14	    'john_doe': { password: 'password123', fullName: 'John Doe' },
+    15	    'jane_smith': { password: 'secret456', fullName: 'Jane Smith' }
+    16	};
+    17	// GET route for the face recognition page
+    18	router.get("/", (req, res) => {
+    19	    res.render("face");
+    20	});
+    21	// POST route for face recognition login
+    22	router.post("/login", (req, res) => {
+    23	    const { username, confidence } = req.body;
+    24	    
+    25	    console.log(`Face recognition attempt for: ${username}, confidence: ${confidence}`);
+    26	    
+    27	    // Validate the user exists
+    28	    if (!recognizedUsers[username]) {
+    29	        return res.json({
+    30	            success: false,
+    31	            message: 'User not recognized in system'
+    32	        });
+    33	    }
+    34	    
+    35	    // Validate confidence level (adjust threshold as needed)
+    36	    if (confidence < 0.5) {
+    37	        return res.json({
+    38	            success: false,
+    39	            message: 'Recognition confidence too low'
+    40	        });
+    41	    }
+    42	    
+    43	    // Successful recognition - create session or JWT
+    44	    req.session.user = {
+    45	        username: username,
+    46	        fullName: recognizedUsers[username].fullName,
+    47	        loginMethod: 'face'
+    48	    };
+    49	    
+    50	    // Or if using JWT:
+    51	    // const token = generateJWT({ username, fullName: recognizedUsers[username].fullName });
+    52	    
+    53	    console.log(`Successful face login for: ${username}`);
+    54	    
+    55	    res.json({
+    56	        success: true,
+    57	        message: 'Face recognition successful',
+    58	        user: {
+    59	            username: username,
+    60	            fullName: recognizedUsers[username].fullName
+    61	        }
+    62	    });
+    63	});
+    64	// Add a dashboard route
+    65	router.get("/dashboard", (req, res) => {
+    66	    console.log('Accessing dashboard, session user:', req.session.user);
+    67	    if (!req.session.user) {
+    68	        return res.redirect('/login');
+    69	    }
+    70	    
+    71	    res.render("dashboard", {
+    72	        user: req.session.user,
+    73	        loginMethod: req.session.user.loginMethod
+    74	    });
+    75	});
+    76	// Logout route
+    77	router.get("/logout", (req, res) => {
+    78	    req.session.destroy();
+    79	    res.redirect('/login');
+    80	});
+    81	export default router;
+./app.js
+     1	import express from "express";
+     2	import path from "path";
+     3	import { fileURLToPath } from "url";
+     4	import faceRouter from "./routes/face.js";
+     5	import loginRouter from "./routes/login.js";
+     6	import session from "express-session"; // Add this
+     7	const __filename = fileURLToPath(import.meta.url);
+     8	const __dirname = path.dirname(__filename);
+     9	const app = express();
+    10	app.use(express.json()); // ← THIS IS CRITICAL
+    11	// Add session middleware
+    12	app.use(session({
+    13	    secret: 'your-secret-key', // Change this to a random string
+    14	    resave: false,
+    15	    saveUninitialized: false,
+    16	    cookie: { secure: false } // Set to true if using HTTPS
+    17	}));
+    18	// view engine setup
+    19	app.set("views", path.join(__dirname, "views"));
+    20	app.set("view engine", "ejs");
+    21	// body parser
+    22	app.use(express.urlencoded({ extended: false }));
+    23	// static files
+    24	app.use(express.static(path.join(__dirname, "public")));
+    25	// routes
+    26	app.use("/login", loginRouter);
+    27	app.use("/face", faceRouter);
+    28	// default redirect
+    29	app.get("/", (req, res) => res.redirect("/login"));
+    30	export default app;
