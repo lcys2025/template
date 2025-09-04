@@ -1,0 +1,431 @@
+./.firebaserc
+     1	{
+     2	  "projects": {
+     3	    "default": "lcys2025-e3078"
+     4	  }
+     5	}
+./public/index.html
+     1	<!DOCTYPE html>
+     2	<html>
+     3	  <head>
+     4	    <meta charset="utf-8">
+     5	    <meta name="viewport" content="width=device-width, initial-scale=1">
+     6	    <title>Welcome to Firebase Hosting</title>
+     7	    <!-- update the version number as needed -->
+     8	    <script defer src="/__/firebase/12.2.1/firebase-app-compat.js"></script>
+     9	    <!-- include only the Firebase features as you need -->
+    10	    <script defer src="/__/firebase/12.2.1/firebase-auth-compat.js"></script>
+    11	    <script defer src="/__/firebase/12.2.1/firebase-database-compat.js"></script>
+    12	    <script defer src="/__/firebase/12.2.1/firebase-firestore-compat.js"></script>
+    13	    <script defer src="/__/firebase/12.2.1/firebase-functions-compat.js"></script>
+    14	    <script defer src="/__/firebase/12.2.1/firebase-messaging-compat.js"></script>
+    15	    <script defer src="/__/firebase/12.2.1/firebase-storage-compat.js"></script>
+    16	    <script defer src="/__/firebase/12.2.1/firebase-analytics-compat.js"></script>
+    17	    <script defer src="/__/firebase/12.2.1/firebase-remote-config-compat.js"></script>
+    18	    <script defer src="/__/firebase/12.2.1/firebase-performance-compat.js"></script>
+    19	    <!-- 
+    20	      initialize the SDK after all desired features are loaded, set useEmulator to false
+    21	      to avoid connecting the SDK to running emulators.
+    22	    -->
+    23	    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    24	    <style media="screen">
+    25	      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+    26	      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+    27	      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+    28	      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+    29	      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+    30	      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+    31	      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+    32	      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+    33	      @media (max-width: 600px) {
+    34	        body, #message { margin-top: 0; background: white; box-shadow: none; }
+    35	        body { border-top: 16px solid #ffa100; }
+    36	      }
+    37	    </style>
+    38	  </head>
+    39	  <body>
+    40	    <div id="message">
+    41	      <h2>Welcome</h2>
+    42	      <h1>Firebase Hosting Setup Complete</h1>
+    43	      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
+    44	      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    45	    </div>
+    46	    <p id="load">Firebase SDK Loading&hellip;</p>
+    47	    <script>
+    48	      document.addEventListener('DOMContentLoaded', function() {
+    49	        const loadEl = document.querySelector('#load');
+    50	        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    51	        // // The Firebase SDK is initialized and available here!
+    52	        //
+    53	        // firebase.auth().onAuthStateChanged(user => { });
+    54	        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+    55	        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+    56	        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+    57	        // firebase.messaging().requestPermission().then(() => { });
+    58	        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+    59	        // firebase.analytics(); // call to activate
+    60	        // firebase.analytics().logEvent('tutorial_completed');
+    61	        // firebase.performance(); // call to activate
+    62	        //
+    63	        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    64	        try {
+    65	          let app = firebase.app();
+    66	          let features = [
+    67	            'auth', 
+    68	            'database', 
+    69	            'firestore',
+    70	            'functions',
+    71	            'messaging', 
+    72	            'storage', 
+    73	            'analytics', 
+    74	            'remoteConfig',
+    75	            'performance',
+    76	          ].filter(feature => typeof app[feature] === 'function');
+    77	          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+    78	        } catch (e) {
+    79	          console.error(e);
+    80	          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+    81	        }
+    82	      });
+    83	    </script>
+    84	  </body>
+    85	</html>
+./.gitignore
+     1	# Logs
+     2	logs
+     3	*.log
+     4	npm-debug.log*
+     5	yarn-debug.log*
+     6	yarn-error.log*
+     7	lerna-debug.log*
+     8	# Diagnostic reports (https://nodejs.org/api/report.html)
+     9	report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+    10	# Runtime data
+    11	pids
+    12	*.pid
+    13	*.seed
+    14	*.pid.lock
+    15	# Directory for instrumented libs generated by jscoverage/JSCover
+    16	lib-cov
+    17	# Coverage directory used by tools like istanbul
+    18	coverage
+    19	*.lcov
+    20	# nyc test coverage
+    21	.nyc_output
+    22	# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+    23	.grunt
+    24	# Bower dependency directory (https://bower.io/)
+    25	bower_components
+    26	# node-waf configuration
+    27	.lock-wscript
+    28	# Compiled binary addons (https://nodejs.org/api/addons.html)
+    29	build/Release
+    30	# Dependency directories
+    31	node_modules/
+    32	jspm_packages/
+    33	# Snowpack dependency directory (https://snowpack.dev/)
+    34	web_modules/
+    35	# TypeScript cache
+    36	*.tsbuildinfo
+    37	# Optional npm cache directory
+    38	.npm
+    39	# Optional eslint cache
+    40	.eslintcache
+    41	# Optional stylelint cache
+    42	.stylelintcache
+    43	# Optional REPL history
+    44	.node_repl_history
+    45	# Output of 'npm pack'
+    46	*.tgz
+    47	# Yarn Integrity file
+    48	.yarn-integrity
+    49	# dotenv environment variable files
+    50	.env
+    51	.env.*
+    52	!.env.example
+    53	# parcel-bundler cache (https://parceljs.org/)
+    54	.cache
+    55	.parcel-cache
+    56	# Next.js build output
+    57	.next
+    58	out
+    59	# Nuxt.js build / generate output
+    60	.nuxt
+    61	dist
+    62	# Gatsby files
+    63	.cache/
+    64	# Comment in the public line in if your project uses Gatsby and not Next.js
+    65	# https://nextjs.org/blog/next-9-1#public-directory-support
+    66	# public
+    67	# vuepress build output
+    68	.vuepress/dist
+    69	# vuepress v2.x temp and cache directory
+    70	.temp
+    71	.cache
+    72	# Sveltekit cache directory
+    73	.svelte-kit/
+    74	# vitepress build output
+    75	**/.vitepress/dist
+    76	# vitepress cache directory
+    77	**/.vitepress/cache
+    78	# Docusaurus cache and generated files
+    79	.docusaurus
+    80	# Serverless directories
+    81	.serverless/
+    82	# FuseBox cache
+    83	.fusebox/
+    84	# DynamoDB Local files
+    85	.dynamodb/
+    86	# Firebase cache directory
+    87	.firebase/
+    88	# TernJS port file
+    89	.tern-port
+    90	# Stores VSCode versions used for testing VSCode extensions
+    91	.vscode-test
+    92	# yarn v3
+    93	.pnp.*
+    94	.yarn/*
+    95	!.yarn/patches
+    96	!.yarn/plugins
+    97	!.yarn/releases
+    98	!.yarn/sdks
+    99	!.yarn/versions
+   100	# Vite logs files
+   101	vite.config.js.timestamp-*
+   102	vite.config.ts.timestamp-*
+   103	######################################
+   104	# Lcys specific <BEGIN>
+   105	######################################
+   106	# 1. Ignore MacOS system files
+   107	.DS_Store
+   108	# 2. Ignore package-lock.json
+   109	package-lock.json
+   110	######################################
+   111	# Lcys specific <END>
+   112	######################################
+   113	# ignore idea folder
+   114	.idea
+./functions/index.js
+     1	const functions = require("firebase-functions");
+     2	const express = require("express");
+     3	const cors = require("cors");
+     4	const app = express();
+     5	app.set('view engine', 'ejs');
+     6	app.use(cors());
+     7	app.get("/", function(req, res, next) {
+     8	  res.render('index');
+     9	});
+    10	app.get("/test", (req, res) => {
+    11	  res.send("Hooray, it works!");
+    12	});
+    13	exports.app = functions.https.onRequest(app);
+./functions/.gitignore
+     1	node_modules/
+     2	*.local
+./functions/package.json
+     1	{
+     2	  "name": "functions",
+     3	  "description": "Cloud Functions for Firebase",
+     4	  "hosting": {
+     5	    "public": "public",
+     6	    "rewrites": [
+     7	      {
+     8	        "source": "**",
+     9	        "function": "app"
+    10	      }
+    11	    ],
+    12	    "ignore": [
+    13	      "firebase json",
+    14	      "**/.*",
+    15	      "**/node_modules/**"
+    16	    ]
+    17	  },
+    18	  "scripts": {
+    19	    "lint": "eslint .",
+    20	    "serve": "firebase emulators:start --only functions",
+    21	    "shell": "firebase functions:shell",
+    22	    "start": "npm run shell",
+    23	    "deploy": "firebase deploy --only functions",
+    24	    "logs": "firebase functions:log"
+    25	  },
+    26	  "engines": {
+    27	    "node": "22"
+    28	  },
+    29	  "main": "index.js",
+    30	  "dependencies": {
+    31	    "cors": "^2.8.5",
+    32	    "ejs": "^3.1.10",
+    33	    "express": "^5.1.0",
+    34	    "firebase": "^12.2.1",
+    35	    "firebase-admin": "^12.6.0",
+    36	    "firebase-functions": "^6.0.1"
+    37	  },
+    38	  "devDependencies": {
+    39	    "eslint": "^8.15.0",
+    40	    "eslint-config-google": "^0.14.0",
+    41	    "firebase-functions-test": "^3.1.0"
+    42	  },
+    43	  "private": true
+    44	}
+./functions/.eslintrc.js
+     1	module.exports = {
+     2	  env: {
+     3	    es6: true,
+     4	    node: true,
+     5	  },
+     6	  parserOptions: {
+     7	    "ecmaVersion": 2018,
+     8	  },
+     9	  extends: [
+    10	    "eslint:recommended",
+    11	    "google",
+    12	  ],
+    13	  rules: {
+    14	    "no-restricted-globals": ["error", "name", "length"],
+    15	    "prefer-arrow-callback": "error",
+    16	    "quotes": ["error", "double", {"allowTemplateLiterals": true}],
+    17	  },
+    18	  overrides: [
+    19	    {
+    20	      files: ["**/*.spec.*"],
+    21	      env: {
+    22	        mocha: true,
+    23	      },
+    24	      rules: {},
+    25	    },
+    26	  ],
+    27	  globals: {},
+    28	};
+./functions/views/index.ejs
+     1	<!DOCTYPE html>
+     2	<html>
+     3	  <head>
+     4	    <meta charset="utf-8">
+     5	    <meta name="viewport" content="width=device-width, initial-scale=1">
+     6	    <title>Welcome to Firebase Hosting</title>
+     7	    <!-- update the version number as needed -->
+     8	    <script defer src="/__/firebase/12.2.1/firebase-app-compat.js"></script>
+     9	    <!-- include only the Firebase features as you need -->
+    10	    <script defer src="/__/firebase/12.2.1/firebase-auth-compat.js"></script>
+    11	    <script defer src="/__/firebase/12.2.1/firebase-database-compat.js"></script>
+    12	    <script defer src="/__/firebase/12.2.1/firebase-firestore-compat.js"></script>
+    13	    <script defer src="/__/firebase/12.2.1/firebase-functions-compat.js"></script>
+    14	    <script defer src="/__/firebase/12.2.1/firebase-messaging-compat.js"></script>
+    15	    <script defer src="/__/firebase/12.2.1/firebase-storage-compat.js"></script>
+    16	    <script defer src="/__/firebase/12.2.1/firebase-analytics-compat.js"></script>
+    17	    <script defer src="/__/firebase/12.2.1/firebase-remote-config-compat.js"></script>
+    18	    <script defer src="/__/firebase/12.2.1/firebase-performance-compat.js"></script>
+    19	    <!-- 
+    20	      initialize the SDK after all desired features are loaded, set useEmulator to false
+    21	      to avoid connecting the SDK to running emulators.
+    22	    -->
+    23	    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    24	    <style media="screen">
+    25	      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+    26	      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+    27	      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+    28	      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+    29	      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+    30	      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+    31	      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+    32	      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+    33	      @media (max-width: 600px) {
+    34	        body, #message { margin-top: 0; background: white; box-shadow: none; }
+    35	        body { border-top: 16px solid #ffa100; }
+    36	      }
+    37	    </style>
+    38	  </head>
+    39	  <body>
+    40	    <div id="message">
+    41	      <h2>Welcome</h2>
+    42	      <h1>Firebase Hosting Setup Complete</h1>
+    43	      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
+    44	      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    45	    </div>
+    46	    <p id="load">Firebase SDK Loading&hellip;</p>
+    47	    <script>
+    48	      document.addEventListener('DOMContentLoaded', function() {
+    49	        const loadEl = document.querySelector('#load');
+    50	        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    51	        // // The Firebase SDK is initialized and available here!
+    52	        //
+    53	        // firebase.auth().onAuthStateChanged(user => { });
+    54	        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+    55	        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+    56	        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+    57	        // firebase.messaging().requestPermission().then(() => { });
+    58	        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+    59	        // firebase.analytics(); // call to activate
+    60	        // firebase.analytics().logEvent('tutorial_completed');
+    61	        // firebase.performance(); // call to activate
+    62	        //
+    63	        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    64	        try {
+    65	          let app = firebase.app();
+    66	          let features = [
+    67	            'auth', 
+    68	            'database', 
+    69	            'firestore',
+    70	            'functions',
+    71	            'messaging', 
+    72	            'storage', 
+    73	            'analytics', 
+    74	            'remoteConfig',
+    75	            'performance',
+    76	          ].filter(feature => typeof app[feature] === 'function');
+    77	          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+    78	        } catch (e) {
+    79	          console.error(e);
+    80	          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+    81	        }
+    82	      });
+    83	    </script>
+    84	  </body>
+    85	</html>
+./firebase.json
+     1	{
+     2	  "hosting": {
+     3	    "public": "public",
+     4	    "ignore": [
+     5	      "firebase.json",
+     6	      "**/.*",
+     7	      "**/node_modules/**"
+     8	    ],
+     9	    "rewrites": [
+    10	      {
+    11	        "source": "**",
+    12	        "destination": "/index.html"
+    13	      }
+    14	    ]
+    15	  },
+    16	  "functions": [
+    17	    {
+    18	      "source": "functions",
+    19	      "codebase": "default",
+    20	      "ignore": [
+    21	        "node_modules",
+    22	        ".git",
+    23	        "firebase-debug.log",
+    24	        "firebase-debug.*.log",
+    25	        "*.local"
+    26	      ],
+    27	      "predeploy": [
+    28	        "npm --prefix \"$RESOURCE_DIR\" run lint"
+    29	      ]
+    30	    }
+    31	  ]
+    32	}
+./lcys2025-278d702b35a1.json
+     1	{
+     2	  "type": "service_account",
+     3	  "project_id": "lcys2025",
+     4	  "private_key_id": "278d702b35a1d7f64c4092825c11a21208e9dafb",
+     5	  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCzj05KfSXXtUEC\nFKlO+xeAVGZI2K3onczw/u1MvLUX3pTtAvi4fpbPrp6BtNKZrCxhevGEaY0wzItZ\nfBXvQecv0Pwc6Qs+7fB7R0o9UIcr9X8x5K+Dc6V+MWiqwSpo2WHp7AfTusLzEgRP\nUK1cQyb8JTq+s1Z/zdL/ww1SPOsoArOJakUUpq6cLeXVgcLONAkmMooxCHACxSpM\n2vysQiah7gQNHxmH5WDL6dRY7Tk3haaK+gh2TPpqpFR88IHE85RE5khTZIasVQ/L\nx8dT0kgnRpw2PO+yYhTH/2wJjZY+ZiAKHJaD4Zug+N0Uf3jDk6c98WT9YeUySCBm\nrjt5wUPNAgMBAAECggEAHSUWGp4cndokPp+26YR1CJXqckmFVNwEL1vZjZqVtFWj\nC6NvVpbpiLU5sij1BA9/tqTbfdgaHEEfHzu2XbrvOQItYc3rzt+VKJVmNfSTtC1p\nY2JQoMANLSH88LZg2VrreyoeDR5j1Utn2q3oLbESq1upoNmAIUd5x5zT1TThIIGl\nbD8zPU45vXeBHqx+47h7izw+cD2OhZIisMoYiEjjsj4aPRHmoVsEaz3LqoCZSSYf\nZmGsiNhTV8QDPY/GotuwtAgYPESXQFRDwAvTKG270iPaoQCidnj/WCQ2Ng6CiNmd\n2ODM9swxykxwUIOlH2QZRmgv+KXvjmi6KKsFfe8NCwKBgQD3dkPSl4Xn0/AcPaoe\nL4bkw/c1+b94W7AJo2I/MdOvAw/B+NZI9vHv5uNYgugfhds0Ob6/ueCe+oyjINGN\nwDYoRNZvYw71yeeqw98OaBSWHIPtILg9k9kQqqzm/dIY8FrZ9MWnmoB+V1HTbyRv\nz62wj8rk8QoC9ssPFf6pAGQltwKBgQC5wUmSU+Rh24xcOMeW8fuy1gR3fy6GWQiI\n7cyysAcnOb+fcDl3yxci0aWuZzPacW+2eLjG/BrRVYPtuiVHGjwgefXHGOnSqIM4\nbfI/W77w3m1T/IUIlctVdCBYlv7xmB1tOfz9uMZPGqV+p63OVu+P1b1S0gvOicq2\n3cqVCcUCmwKBgGdMMeGNqLLuMHPJdeLl2fxSpTYdy8RVGbXcQt24UfHjaEeDNQf+\nNV38VniTJIxMFwXE+RAVamNSmTRbNb5jNvg2TADxK8SEBLWuz8S2w6kpvBRXLTFf\nLyQa6tP9rh8E7he/amadQvf6QUjuQxp9abajP4Gz8IbuODNS7hvj8uofAoGAE9z3\nYQ5XfZ9cgwAPV7TIlXcNQzn2X6dloj7LhNAN88PZGdOGUakF8FM6xEuE3/cBWyHN\noHmU5I2gbetZ0SCdDVv9TCz90+jxHzeij+PfpyIhzrlSAHkEJT8ltlNvL6Z0fxmU\nVA1OJ2dSCxkjHM1vEJJqjFCpsoxJgQR2hTlmN8ECgYARHK7phSYton5NUxKObPLL\nV5RFwuvv80DhaeFuxE84Fa1xHaRI6WArLOQ1/X3Dcv+IxCQy4C5aRhcaFYwKN7/x\nCv3Jzyoh6heNeixHhcWXY5NzbuVNzVz4JIDdAY1ro3Bu2fpwPbfXdyE8w1/XKuBK\nF4cT521OK5f8ypSabpeoJQ==\n-----END PRIVATE KEY-----\n",
+     6	  "client_email": "firebase@lcys2025.iam.gserviceaccount.com",
+     7	  "client_id": "118186778974411955643",
+     8	  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+     9	  "token_uri": "https://oauth2.googleapis.com/token",
+    10	  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    11	  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase%40lcys2025.iam.gserviceaccount.com",
+    12	  "universe_domain": "googleapis.com"
+    13	}
